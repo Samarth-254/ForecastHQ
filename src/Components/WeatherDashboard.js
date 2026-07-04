@@ -8,6 +8,7 @@ export default function WeatherDashboard() {
   const [forecast5days, setForecast5Days] = useState([]);
   const [todayAt, setTodayAt] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); 
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(''); 
   const [latitude, setLatitude] = useState(51.5072); 
   const [longitude, setLongitude] = useState(0.1276); 
   const [citySuggestions, setCitySuggestions] = useState([]); 
@@ -77,19 +78,45 @@ export default function WeatherDashboard() {
     }
   };
 
-  const handleSearchChange = async (e) => {
+  // Debounce the search input query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 400); // 400ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch city suggestions with sanitization when debounced query updates
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      // Input sanitization to prevent injection / XSS (remove special symbols)
+      const sanitizedQuery = debouncedSearchQuery.replace(/[<>:"/\\|?*#;{}[\]()]/g, '').trim();
+      
+      if (sanitizedQuery.length >= 1) {
+        try {
+          const response = await axios.get(
+            `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(sanitizedQuery)}&limit=5&appid=${API_KEY}`
+          );
+          setCitySuggestions(response.data || []);
+        } catch (error) {
+          console.error("Error fetching city suggestions:", error);
+        }
+      } else {
+        setCitySuggestions([]);
+      }
+    };
+
+    fetchSuggestions();
+  }, [debouncedSearchQuery]);
+
+  const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
-    if (query.length >= 1) { // Start searching when 1 or more characters are typed
-      try {
-        const response = await axios.get(`https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${API_KEY}`);
-        setCitySuggestions(response.data || []); // Store matching cities in the suggestions list
-      } catch (error) {
-        console.error("Error fetching city suggestions:", error);
-      }
-    } else {
-      setCitySuggestions([]); // Clear suggestions if the query is empty
+    // Instantly clear suggestions if search query is empty
+    if (query.trim() === '') {
+      setCitySuggestions([]);
     }
   };
 
