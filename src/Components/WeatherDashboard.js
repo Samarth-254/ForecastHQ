@@ -192,9 +192,8 @@ export default function WeatherDashboard() {
     );
   }
 
-  const { main, weather: weatherConditions, wind, visibility } = weather;
+  const { main, weather: weatherConditions, visibility } = weather;
   const { temp, humidity, pressure, feels_like } = main || {};
-  const { speed } = wind || {};
   const weatherIcon = weatherConditions ? weatherConditions[0].icon : '';
   
   return (

@@ -24,6 +24,8 @@ Below is a preview of the ForecastHQ interface in action, displaying the clean g
 
 - **Smart Geolocation Detection**: Instantly load local weather using the browser's native `navigator.geolocation` API combined with reverse geocoding to identify your city name.
 - **Interactive City Autocomplete**: Dynamic search capabilities with instant city, state, and country predictions using the OpenWeatherMap Geocoding API.
+- **Search Query Debouncing**: Optimized API usage with a 400ms typing delay buffer to avoid redundant or duplicate geocoding request calls.
+- **Input Sanitization & Encoding**: Robust security layer that scrubs malicious characters and URL-encodes queries prior to API delivery to prevent cross-site scripting (XSS) and injection vulnerabilities.
 - **Ambient Theme Toggle**: Swap seamlessly between a premium dark theme (`#101014`) and a clean, high-contrast light theme with micro-animations.
 - **Comprehensive Weather Highlights**: Detailed metrics card detailing Sunrise/Sunset times, Humidity, Atmospheric Pressure, Visibility index, and Feels-like temperature.
 - **Hourly Forecasting Grid**: Clear 24-hour horizontal breakdowns depicting hourly temperature shifts and corresponding weather conditions.
